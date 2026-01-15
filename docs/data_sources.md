@@ -101,12 +101,19 @@ For detailed NEC track layouts, consider:
    - **Extract Tool**: https://overpass-turbo.eu/
    - **Contents**: Detailed track layouts, including:
      - Main tracks
-     - Sidings
-     - Crossovers
-     - Platforms
-     - Signals (if mapped)
+     - Sidings and yard tracks
+     - Crossovers and turnouts
+     - **Platforms** (with lengths and positions - excellent coverage)
+     - Signals (partial coverage - if mapped)
+     - Switches (good coverage)
+     - Electrification status
    - **Quality**: Varies by location; NEC generally well-mapped
-   - **Use Case**: Detailed track-level modeling
+   - **Use Case**: 
+     - Platform/station layout modeling (very detailed)
+     - Track topology extraction
+     - Inferring signal blocks from signal positions
+     - Cross-validating other data sources
+   - **See**: `docs/track_modeling.md` for transformation pipeline (geographic → operational model)
 
 ### Recommended OSM Query for NEC Tracks
 ```overpass

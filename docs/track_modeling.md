@@ -313,6 +313,244 @@ CREATE TABLE block_adjacency (
 );
 ```
 
+## Extracting Data from OpenRailwayMap/OpenStreetMap
+
+While OSM provides geographic (lat/lon) data rather than operational schematics, we can extract and transform it into our signal block model.
+
+### Using Overpass API
+
+Query OSM for railway infrastructure along the NEC:
+
+```python
+# Example: Extract NEC signals and tracks between NYP and WAS
+import requests
+import json
+
+overpass_url = "http://overpass-api.de/api/interpreter"
+query = """
+[out:json][timeout:60];
+(
+  way["railway"="rail"]["usage"="main"]["name"~"Northeast Corridor",i]
+    (bbox:38.8,-77.1,40.8,-73.9);
+  node["railway"="signal"](bbox:38.8,-77.1,40.8,-73.9);
+  node["railway"="switch"](bbox:38.8,-77.1,40.8,-73.9);
+  node["railway"="buffer_stop"](bbox:38.8,-77.1,40.8,-73.9);
+  node["railway"="platform"]["operator"~"Amtrak",i](bbox:38.8,-77.1,40.8,-73.9);
+);
+out body;
+>;
+out skel qt;
+"""
+
+response = requests.get(overpass_url, params={'data': query})
+osm_data = response.json()
+
+# Save for processing
+with open('nec_osm_data.json', 'w') as f:
+    json.dump(osm_data, f, indent=2)
+```
+
+### Transformation Pipeline (Go Implementation)
+
+**Step 1: Parse OSM Track Segments**
+```go
+type OSMTrackSegment struct {
+    WayID       int64
+    Nodes       []OSMNode  // Ordered lat/lon points
+    MaxSpeed    int        // From "maxspeed" tag
+    Electrified bool       // From "electrified" tag
+    Tracks      int        // From "tracks" tag (number of parallel tracks)
+    Usage       string     // "main", "branch", "industrial"
+    Name        string     // Route name
+}
+
+type OSMNode struct {
+    ID  int64
+    Lat float64
+    Lon float64
+}
+
+func ParseOSMData(data []byte) ([]OSMTrackSegment, []OSMSignal, []OSMSwitch, error) {
+    // Parse Overpass JSON response
+    // Extract ways, nodes with railway tags
+    // Return structured data
+}
+```
+
+**Step 2: Infer Signal Blocks from Signal Spacing**
+```go
+func InferSignalBlocks(trackSegments []OSMTrackSegment, signals []OSMSignal) []SignalBlock {
+    blocks := []SignalBlock{}
+    
+    // Sort signals along track by milepost
+    sortedSignals := sortSignalsByLocation(signals, trackSegments)
+    
+    // Create block between each pair of consecutive signals
+    for i := 0; i < len(sortedSignals)-1; i++ {
+        sig1 := sortedSignals[i]
+        sig2 := sortedSignals[i+1]
+        
+        distance := calculateDistance(sig1.Location, sig2.Location)
+        
+        block := SignalBlock{
+            BlockID:        fmt.Sprintf("BLK-%s-%s", sig1.ID, sig2.ID),
+            ControlPoint:   sig1.ControlPoint,
+            StartMilepost:  sig1.Milepost,
+            EndMilepost:    sig2.Milepost,
+            Length:         distance,
+            MaxSpeed:       getMaxSpeedBetween(sig1, sig2, trackSegments),
+        }
+        blocks = append(blocks, block)
+    }
+    
+    return blocks
+}
+
+// Haversine distance between two lat/lon points
+func calculateDistance(p1, p2 OSMNode) float64 {
+    const earthRadius = 6371.0 // km
+    
+    lat1Rad := p1.Lat * math.Pi / 180
+    lat2Rad := p2.Lat * math.Pi / 180
+    deltaLat := (p2.Lat - p1.Lat) * math.Pi / 180
+    deltaLon := (p2.Lon - p1.Lon) * math.Pi / 180
+    
+    a := math.Sin(deltaLat/2)*math.Sin(deltaLat/2) +
+         math.Cos(lat1Rad)*math.Cos(lat2Rad)*
+         math.Sin(deltaLon/2)*math.Sin(deltaLon/2)
+    c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
+    
+    return earthRadius * c
+}
+```
+
+**Step 3: Build Interlockings from Switch Clusters**
+```go
+func BuildInterlockings(switches []OSMSwitch, signals []OSMSignal, threshold float64) []Interlocking {
+    // Cluster switches within threshold distance (e.g., 500m)
+    clusters := clusterSwitchesByProximity(switches, threshold)
+    
+    interlockings := []Interlocking{}
+    for _, cluster := range clusters {
+        // Find all signals within cluster area
+        clusterSignals := findSignalsNearCluster(cluster, signals, threshold)
+        
+        interlocking := Interlocking{
+            ID:       fmt.Sprintf("INTERLOCKING-%d", len(interlockings)),
+            Name:     inferInterlockingName(cluster),
+            Location: calculateCentroid(cluster),
+            Routes:   inferRoutesFromSwitches(cluster, clusterSignals),
+        }
+        
+        interlockings = append(interlockings, interlocking)
+    }
+    
+    return interlockings
+}
+```
+
+**Step 4: Calculate Mileposts Along Route**
+```go
+func CalculateMileposts(wayNodes []OSMNode, originPoint OSMNode) map[int64]float64 {
+    mileposts := make(map[int64]float64)
+    
+    cumulativeDistance := 0.0
+    for i, node := range wayNodes {
+        mileposts[node.ID] = cumulativeDistance
+        
+        if i < len(wayNodes)-1 {
+            segmentDist := calculateDistance(node, wayNodes[i+1])
+            cumulativeDistance += segmentDist
+        }
+    }
+    
+    return mileposts
+}
+```
+
+### OSM Data Quality & Workarounds
+
+**Strengths of OSM Data:**
+- ✅ Excellent platform location and length data
+- ✅ Good track geometry (geographic accuracy)
+- ✅ Switch/turnout locations often tagged
+- ✅ Some signal positions marked
+- ✅ Electrification and track gauge usually present
+
+**Limitations:**
+- ❌ Signal aspects/types rarely complete (often just `railway=signal`)
+- ❌ Signal block boundaries NOT explicitly defined
+- ❌ Control point names/codes usually missing
+- ❌ Interlocking operating rules not captured
+- ❌ Track numbering may be inconsistent
+
+**Practical Workarounds:**
+1. **Infer block boundaries**: Use typical spacing (1.5-3km for main lines)
+2. **Default block capacity**: Assume 1 train per block unless otherwise known
+3. **Switch clustering**: Group nearby switches to identify interlocking areas
+4. **Validate with USDOT**: Cross-reference with North American Rail Network data
+5. **Use Amtrak timetables**: Verify station sequences and rough distances
+6. **Progressive refinement**: Start with coarse model, add detail as better data found
+
+### Recommended Data Fusion Approach
+
+Combine multiple sources for best results:
+
+```
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│ OpenStreetMap   │────▶│ Track Topology   │◀────│ USDOT Rail      │
+│ (via Overpass)  │     │ Builder          │     │ Network Dataset │
+└─────────────────┘     └──────────────────┘     └─────────────────┘
+        │                        │                         │
+        │ Platform locations     │ Signal blocks           │ Ownership,
+        │ Switch positions       │ Interlockings          │ line names
+        │ Track geometry         │ Routes                 │ electrification
+        │                        │                         │
+        └────────────────────────┼─────────────────────────┘
+                                 ▼
+                        ┌──────────────────┐
+                        │ Unified Track    │
+                        │ Model Database   │
+                        └──────────────────┘
+```
+
+### Implementation Script Template
+
+```go
+// cmd/osm_importer/main.go
+package main
+
+import (
+    "encoding/json"
+    "io/ioutil"
+    "log"
+    
+    "github.com/pecautr/amtrk_infra_go/pkg/datamodel"
+)
+
+func main() {
+    // 1. Download OSM data using Overpass API
+    osmData := fetchOSMData("Northeast Corridor", bbox{38.8, -77.1, 40.8, -73.9})
+    
+    // 2. Parse into structured format
+    tracks, signals, switches := parseOSMData(osmData)
+    
+    // 3. Infer signal blocks
+    blocks := inferSignalBlocks(tracks, signals)
+    
+    // 4. Build interlockings from switch clusters
+    interlockings := buildInterlockings(switches, signals, 0.5) // 500m threshold
+    
+    // 5. Insert into database
+    db := connectDatabase()
+    insertSignalBlocks(db, blocks)
+    insertInterlockings(db, interlockings)
+    
+    log.Printf("Imported %d signal blocks and %d interlockings", 
+        len(blocks), len(interlockings))
+}
+```
+
 ## Implementation Priority
 
 1. **Phase 1** (MVP): 
