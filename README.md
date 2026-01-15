@@ -137,7 +137,7 @@ Contributions are welcome! Please see the development guide for details on how t
 
 ## License
 
-TBD
+MIT License - see [LICENSE](LICENSE) file for details
 
 ## Data Sources
 

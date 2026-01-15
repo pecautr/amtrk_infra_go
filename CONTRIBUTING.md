@@ -140,6 +140,6 @@ This project uses real-time data from:
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the same license as this project (TBD).
+By contributing, you agree that your contributions will be licensed under the MIT License.
 
 Thank you for helping improve transit operations! 🚆
