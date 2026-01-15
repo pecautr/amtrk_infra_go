@@ -67,6 +67,8 @@ Edit [config/config.yaml](config/config.yaml) to customize:
 - **[Architecture](docs/architecture.md)** - System design and component interactions
 - **[Development Guide](docs/development.md)** - How to build, test, and extend the system
 - **[ML Models](docs/ml_models.md)** - Machine learning model details and training procedures
+- **[Data Sources](docs/data_sources.md)** - Infrastructure and operational data sources
+- **[Track Modeling](docs/track_modeling.md)** - Signal blocks, interlockings, and schematic diagrams
 
 ## Project Structure
 

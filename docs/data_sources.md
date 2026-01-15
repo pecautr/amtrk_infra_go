@@ -33,7 +33,7 @@ Federal rail infrastructure datasets from the U.S. Department of Transportation.
   - Node attributes (type, name, connections)
 - **Coverage**: United States, Canada, Mexico
 - **Source**: Bureau of Transportation Statistics (BTS)
-- **Update Frequency**: Periodic (check metadata)
+- **Update Frequency**: Quarterly (last updated November 2025)
 - **Use Case**: Network topology, junction modeling
 
 #### 2. North American Rail Lines
@@ -96,6 +96,7 @@ For detailed NEC track layouts, consider:
 
 3. **OpenStreetMap (OSM)**:
    - **URL**: https://www.openstreetmap.org/
+   - **OpenRailwayMap**: https://www.openrailwaymap.org/ (specialized railway view)
    - **Railway Tags**: https://wiki.openstreetmap.org/wiki/Railways
    - **Extract Tool**: https://overpass-turbo.eu/
    - **Contents**: Detailed track layouts, including:
@@ -115,9 +116,25 @@ For detailed NEC track layouts, consider:
   way["railway"="rail"]["usage"="main"](40.0,-75.0,43.0,-70.0);
   way["railway"="rail"]["usage"="branch"](40.0,-75.0,43.0,-70.0);
   node["railway"="station"](40.0,-75.0,43.0,-70.0);
+  node["railway"="signal"](40.0,-75.0,43.0,-70.0);
+  way["railway"="rail"]["service"="siding"](40.0,-75.0,43.0,-70.0);
 );
 out geom;
 ```
+
+## Signal and Control System Data
+
+### Positive Train Control (PTC) Documentation
+- **FRA PTC Resources**: https://railroads.dot.gov/train-control/ptc
+- May include signal block boundaries and control point locations
+- Implementation plans sometimes publicly available
+
+### Interlocking and Control Points
+For the NEC's complex interlockings (e.g., "HAROLD", "PRINCE", "DIVIDE"), detailed diagrams may be available through:
+- Engineering publications
+- Safety investigation reports (NTSB)
+- Academic case studies
+- Railroad signal engineering conferences
 
 ## Historical Performance Data
 
