@@ -1,3 +1,8 @@
+# Rust
+/target
+Cargo.lock
+*.pdb
+
 # Binaries
 *.exe
 *.exe~
@@ -7,16 +12,26 @@
 bin/
 dist/
 
-# Test binary
-*.test
-*.out
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
 
-# Go workspace
-go.work
-go.work.sum
-
-# Dependency directories
-vendor/
+# Jupyter
+.ipynb_checkpoints
+*.ipynb_checkpoints/
 
 # IDE
 .vscode/
@@ -38,11 +53,16 @@ logs/
 *.sqlite
 *.sqlite3
 
-# ML Models
+# ML Models (keep .onnx checked in)
 models/*.pkl
 models/*.h5
 models/*.pt
+models/*.joblib
 !models/.gitkeep
+!models/*.onnx
+
+# ONNX models generated from training
+python/models/
 
 # Data files
 data/raw/*
