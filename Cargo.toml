@@ -1,0 +1,95 @@
+[package]
+name = "amtrk-infra"
+version = "0.1.0"
+edition = "2021"
+authors = ["Ryan Pecaut <ryanpeco@gmail.com>"]
+license = "MIT"
+description = "Transit optimization system with ML for North American rail networks"
+repository = "https://github.com/pecautr/amtrk_infra_go"
+
+[dependencies]
+# Async runtime
+tokio = { version = "1.35", features = ["full"] }
+tokio-postgres = { version = "0.7", features = ["with-chrono-0_4", "with-uuid-1", "with-serde_json-1"] }
+
+# Web framework & API
+axum = "0.7"
+tower = "0.4"
+tower-http = { version = "0.5", features = ["cors", "trace"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+prost = "0.12"  # Protocol Buffers for GTFS-RT
+prost-types = "0.12"
+
+# Database
+sqlx = { version = "0.7", features = ["runtime-tokio-native-tls", "postgres", "chrono", "uuid"] }
+deadpool-postgres = "0.12"
+
+# Date/time
+chrono = { version = "0.4", features = ["serde"] }
+
+# UUID
+uuid = { version = "1.6", features = ["v4", "serde"] }
+
+# HTTP client
+reqwest = { version = "0.11", features = ["json"] }
+
+# Configuration
+config = "0.13"
+dotenvy = "0.15"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# Error handling
+thiserror = "1.0"
+anyhow = "1.0"
+
+# Geographic & spatial
+geo = "0.27"  # Geometric primitives
+geo-types = "0.7"
+rstar = "0.11"  # R-tree spatial indexing for track queries
+geojson = "0.24"
+
+# Data processing
+polars = { version = "0.36", features = ["lazy", "temporal", "strings", "csv"] }
+
+# Optimization
+good_lp = { version = "1.7", features = ["coin_cbc", "highs"] }
+
+# ML inference (ONNX models from Python)
+tract-onnx = "0.21"
+
+# Numerical computing
+ndarray = "0.15"
+
+[build-dependencies]
+prost-build = "0.12"  # Compile .proto files
+
+[dev-dependencies]
+criterion = "0.5"  # Benchmarking
+
+[[bin]]
+name = "orchestrator"
+path = "src/bin/orchestrator.rs"
+
+[[bin]]
+name = "api-server"
+path = "src/bin/api_server.rs"
+
+[[bin]]
+name = "osm-importer"
+path = "src/bin/osm_importer.rs"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+
+[profile.dev]
+opt-level = 0
+debug = true
