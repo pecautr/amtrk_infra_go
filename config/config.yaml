@@ -1,0 +1,103 @@
+server:
+  host: "0.0.0.0"
+  port: 8080
+  environment: "development"
+
+gtfs_rt:
+  feeds:
+    vehicle_positions: "https://api-v3.amtrak.com/gtfsrt/v1/vehiclepositions"
+    trip_updates: "https://api-v3.amtrak.com/gtfsrt/v1/tripupdates"
+    service_alerts: "https://api-v3.amtrak.com/gtfsrt/v1/alerts"
+  refresh_interval: 30s
+  api_key: "" # Set via environment variable AMTRAK_API_KEY
+
+database:
+  host: "localhost"
+  port: 5432
+  database: "amtrak_nec"
+  username: "amtrak"
+  password: "" # Set via environment variable DB_PASSWORD
+  ssl_mode: "disable"
+  max_connections: 25
+
+optimization:
+  max_solve_time: 30s
+  conflict_horizon: 2h
+  minimum_headway: 180 # seconds
+  objective_weights:
+    total_delay: 0.4
+    max_delay: 0.3
+    passenger_impact: 0.2
+    network_throughput: 0.05
+    energy_efficiency: 0.05
+
+ml:
+  models:
+    delay_predictor: "models/delay_predictor.pkl"
+    conflict_predictor: "models/conflict_predictor.pkl"
+    dispatch_advisor: "models/dispatch_advisor.pkl"
+    performance_analyzer: "models/performance_analyzer.pkl"
+  retraining_interval: 24h
+  min_training_data: 1000
+  feature_engineering:
+    enabled: true
+    lookback_hours: 24
+
+orchestrator:
+  cycle_interval: 1h
+  startup_delay: 0s
+  enable_ml_predictions: true
+  enable_optimization: true
+  publish_recommendations: true
+
+logging:
+  level: "info" # debug, info, warn, error
+  format: "json" # json, text
+  output: "stdout" # stdout, file
+  file_path: "logs/orchestrator.log"
+
+monitoring:
+  enabled: true
+  prometheus_port: 9090
+  metrics_path: "/metrics"
+
+# NEC-specific configuration
+nec:
+  corridor: "northeast"
+  stations:
+    - id: "BOS"
+      name: "Boston South Station"
+      platforms: 12
+      capacity: 8
+    - id: "PVD"
+      name: "Providence"
+      platforms: 4
+      capacity: 3
+    - id: "NYP"
+      name: "New York Penn Station"
+      platforms: 21
+      capacity: 12
+    - id: "PHI"
+      name: "Philadelphia 30th Street"
+      platforms: 16
+      capacity: 10
+    - id: "WAS"
+      name: "Washington Union Station"
+      platforms: 22
+      capacity: 14
+  
+  trainsets:
+    - type_id: "acela"
+      max_speed: 240
+      service_speed: 215
+    - type_id: "acs64-amfleet"
+      max_speed: 200
+      service_speed: 177
+
+  speed_restrictions:
+    - segment: "NYP-PENN"
+      max_speed: 30
+      reason: "Urban tunnel"
+    - segment: "BOS-BACK"
+      max_speed: 40
+      reason: "Station approach"
