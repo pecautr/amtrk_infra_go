@@ -4,12 +4,14 @@ server:
   environment: "development"
 
 gtfs_rt:
+  # Using Catenary Transit's open-source Amtrak GTFS-RT feed
+  # Source: https://github.com/CatenaryTransit/amtrak-gtfs-rt
   feeds:
-    vehicle_positions: "https://api-v3.amtrak.com/gtfsrt/v1/vehiclepositions"
-    trip_updates: "https://api-v3.amtrak.com/gtfsrt/v1/tripupdates"
-    service_alerts: "https://api-v3.amtrak.com/gtfsrt/v1/alerts"
+    vehicle_positions: "https://gtfs.catenarymaps.org/gtfs-rt/amtrak"
+    trip_updates: "https://gtfs.catenarymaps.org/gtfs-rt/amtrak"
+    service_alerts: "https://gtfs.catenarymaps.org/gtfs-rt/amtrak"
   refresh_interval: 30s
-  api_key: "" # Set via environment variable AMTRAK_API_KEY
+  api_key: "" # Not required for Catenary Transit feed
 
 database:
   host: "localhost"

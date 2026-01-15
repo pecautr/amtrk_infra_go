@@ -199,10 +199,17 @@ func (o *Orchestrator) runCycle(ctx context.Context) error {
 func (o *Orchestrator) ingestData(ctx context.Context) error {
 	log.Debug("Ingesting GTFS-RT data")
 	
-	// In production, would fetch from:
-	// - https://api-v3.amtrak.com/gtfsrt/v1/vehiclepositions
-	// - https://api-v3.amtrak.com/gtfsrt/v1/tripupdates
-	// - https://api-v3.amtrak.com/gtfsrt/v1/alerts
+	// Using Catenary Transit's open-source Amtrak GTFS-RT feed
+	// Source: https://github.com/CatenaryTransit/amtrak-gtfs-rt
+	// Feed URL: https://gtfs.catenarymaps.org/gtfs-rt/amtrak
+	// 
+	// This feed provides:
+	// - Real-time vehicle positions (updated ~30 seconds)
+	// - Trip updates with delay information
+	// - Service alerts for disruptions
+	// 
+	// Note: No historical data available from this feed.
+	// For historical analysis, we'll need to persist data locally.
 	
 	// Placeholder: Simulate data ingestion
 	time.Sleep(2 * time.Second)

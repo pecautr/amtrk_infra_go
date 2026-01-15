@@ -139,9 +139,20 @@ Contributions are welcome! Please see the development guide for details on how t
 
 TBD
 
+## Data Sources
+
+This system uses real-time train location data from:
+
+- **[Catenary Transit Amtrak GTFS-RT](https://github.com/CatenaryTransit/amtrak-gtfs-rt)** - Open-source GTFS-Realtime feed for Amtrak
+  - Vehicle positions updated every ~30 seconds
+  - Trip updates with delay information
+  - Service alerts for disruptions
+  - Community-maintained and welcomes contributions
+
 ## References
 
 - [GTFS-Realtime Specification](https://gtfs.org/realtime/)
+- [Catenary Transit Amtrak GTFS-RT](https://github.com/CatenaryTransit/amtrak-gtfs-rt)
 - [Amtrak Developer API](https://www.amtrak.com/developer)
 - Deutsche Bahn ADA-PMB System (inspiration)
 
