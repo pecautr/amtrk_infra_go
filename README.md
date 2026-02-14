@@ -6,6 +6,25 @@ Inspired by Deutsche Bahn's ADA-PMB system.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+## 🗺️ City Map Poster Generator
+
+**New!** This repository now includes a standalone **City Map Poster Generator** - a web-based tool for creating aesthetic black and white street and rail maps that can be printed as custom posters.
+
+🎨 **Features:**
+- Interactive map customization for any city worldwide
+- Multiple visual styles (Black & White, Grayscale, Inverted, Sepia)
+- Customizable poster sizes (A4, A3, Letter, Tabloid, and custom dimensions)
+- Adjustable borders and colors
+- Export to PNG/SVG formats
+- Print-ready output
+
+📁 **Location:** [`map-poster-generator/`](map-poster-generator/)  
+📖 **Documentation:** [Map Poster Generator README](map-poster-generator/README.md)
+
+This tool sits **adjacent** to the Amtrak infrastructure work and operates independently.
+
+---
+
 ## 🚀 Technology Stack: Rust + Python
 
 This project uses a **hybrid architecture**:
@@ -110,6 +129,11 @@ amtrk_infra_go/  (Rust + Python)
 ├── python/              # ML training
 │   ├── train_delay_predictor.py
 │   └── requirements.txt
+├── map-poster-generator/  # 🗺️ City Map Poster Generator (standalone)
+│   ├── index-full.html    # Full-featured map UI
+│   ├── css/               # Styling
+│   ├── js/                # Interactive controls & export
+│   └── README.md          # Map generator documentation
 ├── config/              # Configuration
 ├── scripts/             # Database schema
 └── docs/                # Documentation

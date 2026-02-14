@@ -12,6 +12,9 @@ Cargo.lock
 bin/
 dist/
 
+# Map Poster Generator - Optional Libraries
+map-poster-generator/lib/
+
 # Python
 __pycache__/
 *.py[cod]
