@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Map Poster Generator - Simple Version</title>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <style>
+        .setup-notice {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem;
+            color: #856404;
+        }
+        
+        .setup-notice h3 {
+            margin-top: 0;
+            color: #856404;
+        }
+        
+        .setup-notice code {
+            background: #fff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        
+        .setup-notice ul {
+            margin-left: 1.5rem;
+        }
+        
+        .setup-notice li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>🗺️ City Map Poster Generator</h1>
+            <p>Create aesthetic black and white street and rail maps for printing</p>
+        </header>
+
+        <!-- Setup Notice -->
+        <div class="setup-notice">
+            <h3>📦 Setup Required</h3>
+            <p>This application requires mapping libraries to function. To use the full-featured version:</p>
+            <ul>
+                <li><strong>Option 1 (CDN - Recommended for web deployment):</strong> 
+                    Edit <code>index-full.html</code> to use Leaflet from CDN (works when deployed to a web server with internet access)
+                </li>
+                <li><strong>Option 2 (Local - For offline use):</strong> 
+                    Download Leaflet.js library manually and place in <code>lib/leaflet/</code> directory:
+                    <ul>
+                        <li>Download from <a href="https://leafletjs.com/download.html" target="_blank">leafletjs.com</a></li>
+                        <li>Extract to <code>map-poster-generator/lib/leaflet/</code></li>
+                        <li>Then use <code>index-full.html</code></li>
+                    </ul>
+                </li>
+                <li><strong>Option 3 (Quick demo):</strong> 
+                    View the screenshot below or open the application in a browser with internet access
+                </li>
+            </ul>
+            <p><strong>📖 For full documentation, see <code>README.md</code></strong></p>
+        </div>
+
+        <!-- Main content area -->
+        <div class="main-content">
+            <!-- Control Panel -->
+            <aside class="control-panel">
+                <h2>Customize Your Map</h2>
+                
+                <!-- City Selection -->
+                <div class="control-group">
+                    <label>
+                        <strong>📍 City Location</strong>
+                    </label>
+                    <input type="text" placeholder="Enter city name (e.g., Cincinnati)" disabled />
+                    <button class="btn btn-primary" disabled>Search</button>
+                    <p style="font-size: 0.9em; color: #666; margin-top: 0.5rem;">
+                        <em>Requires Leaflet.js and internet connection</em>
+                    </p>
+                </div>
+
+                <!-- Map Style -->
+                <div class="control-group">
+                    <label>
+                        <strong>🎨 Map Style</strong>
+                    </label>
+                    <select disabled>
+                        <option>Black & White (Classic)</option>
+                        <option>Grayscale</option>
+                        <option>Inverted (White on Black)</option>
+                        <option>Sepia Tone</option>
+                    </select>
+                </div>
+
+                <!-- Color Customization -->
+                <div class="control-group">
+                    <label>
+                        <strong>🎨 Street Color</strong>
+                    </label>
+                    <input type="color" value="#000000" disabled />
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        <strong>🎨 Background Color</strong>
+                    </label>
+                    <input type="color" value="#ffffff" disabled />
+                </div>
+
+                <!-- Poster Settings -->
+                <div class="control-group">
+                    <label>
+                        <strong>📏 Poster Size</strong>
+                    </label>
+                    <select disabled>
+                        <option>A4 (210 × 297 mm)</option>
+                        <option>A3 (297 × 420 mm)</option>
+                        <option>Letter (8.5 × 11 in)</option>
+                        <option>Tabloid (11 × 17 in)</option>
+                        <option>18 × 24 in</option>
+                        <option>24 × 36 in</option>
+                    </select>
+                </div>
+
+                <!-- Border Settings -->
+                <div class="control-group">
+                    <label>
+                        <strong>🖼️ Border Width: <span>20</span>mm</strong>
+                    </label>
+                    <input type="range" min="0" max="50" value="20" step="1" disabled />
+                </div>
+
+                <!-- Map Features -->
+                <div class="control-group">
+                    <label>
+                        <strong>🛤️ Show Features</strong>
+                    </label>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" checked disabled />
+                            Streets
+                        </label>
+                        <label>
+                            <input type="checkbox" checked disabled />
+                            Railways
+                        </label>
+                        <label>
+                            <input type="checkbox" checked disabled />
+                            Water Bodies
+                        </label>
+                        <label>
+                            <input type="checkbox" checked disabled />
+                            Parks
+                        </label>
+                        <label>
+                            <input type="checkbox" disabled />
+                            Buildings
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Export Options -->
+                <div class="control-group">
+                    <label>
+                        <strong>💾 Export Options</strong>
+                    </label>
+                    <button class="btn btn-primary btn-full" disabled>
+                        Export as PNG
+                    </button>
+                    <button class="btn btn-secondary btn-full" disabled>
+                        Export as SVG (Vector)
+                    </button>
+                    <button class="btn btn-secondary btn-full" disabled>
+                        🖨️ Print Preview
+                    </button>
+                </div>
+
+                <!-- Instructions -->
+                <div class="control-group instructions">
+                    <details open>
+                        <summary><strong>ℹ️ How to Use</strong></summary>
+                        <ol>
+                            <li>Search for your city or drag the map to your desired location</li>
+                            <li>Zoom in/out to frame your area</li>
+                            <li>Customize colors, style, and features</li>
+                            <li>Adjust poster size and border</li>
+                            <li>Export or print your custom map poster</li>
+                        </ol>
+                        <p style="margin-top: 1rem; font-size: 0.9em;">
+                            <strong>Note:</strong> This is a demo page. See setup instructions above to enable full functionality.
+                        </p>
+                    </details>
+                </div>
+            </aside>
+
+            <!-- Map Container (placeholder) -->
+            <div class="map-wrapper">
+                <div id="map-preview" class="map-container" style="background: #e9ecef; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 2rem; text-align: center;">
+                    <h3 style="color: #6c757d; margin-bottom: 1rem;">Map View Placeholder</h3>
+                    <p style="color: #6c757d; max-width: 500px;">
+                        The interactive map will appear here once the required libraries are installed.
+                        The map will show OpenStreetMap tiles with streets, railways, and other features
+                        that can be customized using the controls on the left.
+                    </p>
+                    <p style="color: #6c757d; max-width: 500px; margin-top: 1rem;">
+                        <strong>Features when enabled:</strong><br>
+                        • Interactive pan and zoom<br>
+                        • Search for any city worldwide<br>
+                        • Multiple visual styles<br>
+                        • Custom colors and borders<br>
+                        • Export to PNG/SVG formats
+                    </p>
+                </div>
+                <div class="map-info">
+                    <p>
+                        <strong>Default Location:</strong> 
+                        <span>Cincinnati, OH (39.1031, -84.5120)</span>
+                    </p>
+                    <p>
+                        <strong>Default Zoom:</strong> 
+                        <span>13</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Map Poster Generator</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>🗺️ City Map Poster Generator</h1>
+            <p>Create aesthetic black and white street and rail maps for printing</p>
+        </header>
+
+        <!-- Main content area -->
+        <div class="main-content">
+            <!-- Control Panel -->
+            <aside class="control-panel">
+                <h2>Customize Your Map</h2>
+                
+                <!-- City Selection -->
+                <div class="control-group">
+                    <label for="city-search">
+                        <strong>📍 City Location</strong>
+                    </label>
+                    <input type="text" id="city-search" placeholder="Enter city name (e.g., Cincinnati)" />
+                    <button id="search-btn" class="btn btn-primary">Search</button>
+                    <div id="search-results" class="search-results"></div>
+                </div>
+
+                <!-- Map Style -->
+                <div class="control-group">
+                    <label for="map-style">
+                        <strong>🎨 Map Style</strong>
+                    </label>
+                    <select id="map-style">
+                        <option value="black-white">Black & White (Classic)</option>
+                        <option value="grayscale">Grayscale</option>
+                        <option value="inverted">Inverted (White on Black)</option>
+                        <option value="sepia">Sepia Tone</option>
+                    </select>
+                </div>
+
+                <!-- Color Customization -->
+                <div class="control-group">
+                    <label for="street-color">
+                        <strong>🎨 Street Color</strong>
+                    </label>
+                    <input type="color" id="street-color" value="#000000" />
+                </div>
+
+                <div class="control-group">
+                    <label for="background-color">
+                        <strong>🎨 Background Color</strong>
+                    </label>
+                    <input type="color" id="background-color" value="#ffffff" />
+                </div>
+
+                <!-- Poster Settings -->
+                <div class="control-group">
+                    <label for="poster-size">
+                        <strong>📏 Poster Size</strong>
+                    </label>
+                    <select id="poster-size">
+                        <option value="a4">A4 (210 × 297 mm)</option>
+                        <option value="a3">A3 (297 × 420 mm)</option>
+                        <option value="letter">Letter (8.5 × 11 in)</option>
+                        <option value="tabloid">Tabloid (11 × 17 in)</option>
+                        <option value="18x24">18 × 24 in</option>
+                        <option value="24x36">24 × 36 in</option>
+                        <option value="custom">Custom Size</option>
+                    </select>
+                </div>
+
+                <div class="control-group" id="custom-size-controls" style="display: none;">
+                    <label>
+                        <strong>Custom Dimensions</strong>
+                    </label>
+                    <div class="input-row">
+                        <input type="number" id="custom-width" placeholder="Width" min="100" step="10" />
+                        <input type="number" id="custom-height" placeholder="Height" min="100" step="10" />
+                        <select id="custom-unit">
+                            <option value="mm">mm</option>
+                            <option value="in">inches</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Border Settings -->
+                <div class="control-group">
+                    <label for="border-width">
+                        <strong>🖼️ Border Width: <span id="border-width-value">20</span>mm</strong>
+                    </label>
+                    <input type="range" id="border-width" min="0" max="50" value="20" step="1" />
+                </div>
+
+                <!-- Map Features -->
+                <div class="control-group">
+                    <label>
+                        <strong>🛤️ Show Features</strong>
+                    </label>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="show-streets" checked />
+                            Streets
+                        </label>
+                        <label>
+                            <input type="checkbox" id="show-railways" checked />
+                            Railways
+                        </label>
+                        <label>
+                            <input type="checkbox" id="show-water" checked />
+                            Water Bodies
+                        </label>
+                        <label>
+                            <input type="checkbox" id="show-parks" checked />
+                            Parks
+                        </label>
+                        <label>
+                            <input type="checkbox" id="show-buildings" />
+                            Buildings
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Export Options -->
+                <div class="control-group">
+                    <label>
+                        <strong>💾 Export Options</strong>
+                    </label>
+                    <button id="export-png" class="btn btn-primary btn-full">
+                        Export as PNG
+                    </button>
+                    <button id="export-svg" class="btn btn-secondary btn-full">
+                        Export as SVG (Vector)
+                    </button>
+                    <button id="print-btn" class="btn btn-secondary btn-full">
+                        🖨️ Print Preview
+                    </button>
+                </div>
+
+                <!-- Instructions -->
+                <div class="control-group instructions">
+                    <details>
+                        <summary><strong>ℹ️ How to Use</strong></summary>
+                        <ol>
+                            <li>Search for your city or drag the map to your desired location</li>
+                            <li>Zoom in/out to frame your area</li>
+                            <li>Customize colors, style, and features</li>
+                            <li>Adjust poster size and border</li>
+                            <li>Export or print your custom map poster</li>
+                        </ol>
+                    </details>
+                </div>
+            </aside>
+
+            <!-- Map Container -->
+            <div class="map-wrapper">
+                <div id="map-preview" class="map-container">
+                    <div id="map"></div>
+                </div>
+                <div class="map-info">
+                    <p>
+                        <strong>Coordinates:</strong> 
+                        <span id="current-coords">39.1031, -84.5120</span>
+                    </p>
+                    <p>
+                        <strong>Zoom Level:</strong> 
+                        <span id="current-zoom">13</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    
+    <!-- html2canvas for PNG export (optional - shows instructions if not available) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" 
+            integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" 
+            crossorigin="anonymous" 
+            referrerpolicy="no-referrer"></script>
+    
+    <!-- Custom JS -->
+    <script src="js/map.js"></script>
+    <script src="js/controls.js"></script>
+    <script src="js/export.js"></script>
+</body>
+</html>
